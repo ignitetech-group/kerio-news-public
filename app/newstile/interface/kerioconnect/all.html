@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFI Dashboard - KerioConnect & AppManager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            color: #121457;
+            overflow-x: hidden;
+            font-size: 11.2px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            max-width: 1075px;
+            margin: 0 auto;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            padding: 14px;
+        }
+
+        .news-feed {
+            background-color: white;
+            border-radius: 7px;
+            padding: 14px;
+            box-shadow: 0 2.8px 5.6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .news-feed .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .news-feed h2 {
+            font-size: 1.05rem;
+            color: #121457;
+            margin: 0;
+        }
+
+        .clear-filters {
+            background-color: transparent;
+            border: 1px solid #121457;
+            color: #121457;
+            padding: 5.6px 8.4px;
+            border-radius: 3.5px;
+            cursor: pointer;
+            font-size: 0.6125rem;
+        }
+
+        .clear-filters:hover {
+            background-color: #1f2280;
+            color: white;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .filter-buttons button {
+            padding: 5.6px 7px;
+            background-color: #E5F1FF;
+            color: #3E4757;
+            border: 1px solid #121457;
+            border-radius: 3.5px;
+            cursor: pointer;
+            font-size: 0.6125rem;
+            font-weight: bold;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .filter-buttons button:hover {
+            background-color: #1f2280;
+            color: white;
+        }
+
+        .cta-button {
+            padding: 7px 14px;
+            background-color: #121457;
+            color: white;
+            border: none;
+            border-radius: 3.5px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background-color: #1f2280;
+            transform: translateY(-1.4px);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .news-article {
+            border-top: 2.8px solid #121457;
+            background-color: white;
+            padding: 10.5px;
+            margin-bottom: 14px;
+            box-shadow: 0 1.4px 3.5px rgba(0, 0, 0, 0.1);
+            border-radius: 3.5px;
+            display: block;
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .article-tag {
+            background-color: #e5f1ff;
+            color: #121457;
+            padding: 2.8px 5.6px;
+            border-radius: 2.8px;
+            font-size: 0.6125rem;
+            font-weight: 600;
+        }
+
+        .article-date {
+            font-size: 0.6125rem;
+            color: #545f73;
+        }
+
+        .news-article h2 {
+            font-size: 0.875rem;
+            color: #121457;
+            margin: 7px 0;
+        }
+
+        .news-article h3 {
+            font-size: 0.77rem;
+            color: #121457;
+            margin: 10.5px 0 7px 0;
+        }
+
+        .news-article h4 {
+            font-size: 0.7rem;
+            color: #121457;
+            margin: 8.4px 0 5.6px 0;
+        }
+
+        .news-article h5 {
+            font-size: 0.63rem;
+            color: #121457;
+            margin: 7px 0 4.2px 0;
+        }
+
+        .news-article p {
+            max-height: none;
+            overflow: visible;
+            line-height: 1.4;
+            margin-bottom: 10.5px;
+        }
+
+        .news-article ul, .news-article ol {
+            margin: 7px 0;
+            padding-left: 14px;
+        }
+
+        .news-article li {
+            margin-bottom: 3.5px;
+            line-height: 1.3;
+        }
+
+        .news-article img {
+            max-width: 100%;
+            height: auto;
+            margin: 7px 0;
+        }
+
+        .product-section {
+            margin-bottom: 14px;
+        }
+
+        .product-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .note {
+            font-style: italic;
+            color: #666;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="main-content">
+            <div class="news-feed">
+                <div class="header-row">
+                    <h2>News feed</h2>
+                    <button class="clear-filters" onclick="clearFilters()">Clear filters</button>
+                </div>
+
+                <div class="filter-buttons">
+                    <button onclick="filterArticles('Product Update')">Product Updates</button>
+                    <button onclick="filterArticles('Product Info')">Product Info</button>
+                    <button onclick="filterArticles('Known Bugs')">Known Bugs</button>
+                    <button onclick="filterArticles('Blog Post')">Blog Posts</button>
+                </div>
+                <div class="news-article" data-tag="Product Updates">
+                    <div class="article-header">
+                    <span class="article-tag">Product Updates</span>
+                     <span class="article-date">December 1, 2025</span>
+                     </div>                
+                    <h2>GFI KerioConnect 10.0.8p2 Now Available</h2>
+                     <p>GFI KerioConnect AI 10.0.8p2 is now available, addressing critical code signing issues to ensure secure software distribution and system integrity.</p>
+                      <h3>What's New:</h3>
+                      <ul>
+                          <li><strong>Resolved Updater Service Signing:</strong> Fixed code signing for the Updater service to maintain verified software authenticity during updates.</li>
+                          <li><strong>Resolved KOFF Internal Binary Signing:</strong> Corrected code signing for multiple KOFF components including DbBackup.exe, kassist.exe, KoffRtfWrapper.exe, ProfileCreator.exe, and KoffBackend.exe, ensuring all executables pass security validation.</li>
+                      </ul>
+                      <p>To view the complete release notes, visit our <a href="https://gfi.ai/products-and-solutions/email-and-messaging-solutions/kerioconnect/resources/documentation/product-releases">release notes page</a>.</p>
+                      <p>For product downloads and information about upgrading GFI KerioConnect AI, visit the <a href="https://upgrade.gfi.com/?product=gfi-kerioconnect">GFI Upgrade Center</a>.</p>
+                    </div>
+                <div class="news-article" data-tag="Product Updates">
+                    <div class="article-header">
+                        <span class="article-tag">Product Updates</span>
+                        <span class="article-date">November 20, 2025</span>
+                    </div>                
+                    <h2>Hey, did you know KerioConnect® AI Works with Debian Trixie and Windows Server 2025?</h2>
+                    <p>Just a reminder that GFI KerioConnect AI supports the following operating system releases, giving you more flexibility in your deployment options.</p>
+                    <ul>
+                        <li><strong>Debian Trixie Support:</strong> Deploy KerioConnect AI on Debian Trixie for full Linux compatibility and access to the latest Debian features and security updates.</li>
+                        <li><strong>Windows Server 2025 Support:</strong> Leverage Windows Server 2025 with KerioConnect AI, ensuring your email infrastructure benefits from enhanced security and performance improvements.</li>
+                    </ul>
+                    <p>For product downloads and upgrade information, visit the <a href="https://upgrade.gfi.com/?product=gfi-kerioconnect">GFI Upgrade Center</a>.</p>
+                  </div>
+                <div class="news-article" data-tag="Product Info">
+                    <div class="article-header">
+                        <span class="article-tag">Product Info</span>
+                        <span class="article-date">October 24, 2025</span>
+                    </div>
+                    <h2>GFI KerioConnect 10.0.8: Using Placeholders in Server Message Filters</h2>
+                    <p>GFI KerioConnect's server message filters can be customized with placeholders from email headers for dynamic automation, like personalized autoresponders or notifications.</p>
+                    
+                    <h3>Placeholder Syntax:</h3>
+                    <p>Use placeholders in filter rules or texts; GFI KerioConnect replaces them with email data.</p>
+                    <ul>
+                        <li><strong>$name$:</strong> For simple headers (e.g., $From$)</li>
+                        <li><strong>${name}:</strong> Recommended for all (e.g., ${message-id}); required for hyphenated or non-standard headers. Always prefer this for reliability.</li>
+                    </ul>
+                    
+                    <h3>Common Placeholders (Valid in Notifications):</h3>
+                    <ul>
+                        <li>${from} → Sender</li>
+                        <li>${to} → Recipient</li>
+                        <li>${cc} → Carbon Copy</li>
+                        <li>${bcc} → Blind Carbon Copy</li>
+                        <li>${subject} → Subject</li>
+                        <li>${date} → Date</li>
+                        <li>${message-id} → Message-ID</li>
+                        <li>${content-type} → Content-Type</li>
+                        <li>${reply-to} → Reply-To</li>
+                        <li>${size} → Message size (not a header)</li>
+                        <li>${text} → Body text</li>
+                    </ul>
+                    <p><strong>Note:</strong> Use in text only, not as email addresses.</p>
+                    
+                    <h3>Example: Personalized Autoresponder</h3>
+                    <p><strong>Trigger:</strong> Incoming messages to a support address</p>
+                    <p><strong>Subject:</strong> Automatic Reply: ${subject}</p>
+                    <p><strong>Body:</strong><br>
+                    Dear ${from},<br><br>
+                    Thank you for your message about "${subject}" received on ${date}. We will reply within 24 hours.<br><br>
+                    Best regards,<br>
+                    Support Team</p>
+                    
+                    <p><strong>Result:</strong> Customizes the reply with the original sender, subject, and date (e.g., "Dear John Doe john@example.com, Thank you for your message about 'Issue Report' received on Wed, 15 May 2024...").</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Info">
+                    <div class="article-header">
+                        <span class="article-tag">Product Info</span>
+                        <span class="article-date">October 9, 2025</span>
+                    </div>                
+                    <h2>Let's Encrypt Certificate Renewal and Shield Matrix Interaction</h2>
+                    <p>Users may experience SSL certificate renewal delays in KerioConnect when KerioControl's Shield Matrix blocks Let's Encrypt endpoints that have been flagged by global threat intelligence.</p>
+                    <h3>Workaround:</h3>
+                    <ul>
+                        <li><strong>Temporary Solution:</strong> Disable Shield Matrix in KerioControl during KerioConnect certificate renewal, then re-enable once renewal completes</li>
+                        <li><strong>Affected Configurations:</strong> KerioConnect with KerioControl running Shield Matrix enabled</li>
+                    </ul>
+                    <p>We're monitoring this behavior to determine whether this represents a change in Let's Encrypt's standard operations. Updates will be provided as the situation develops.</p>
+                    <p>If you need assistance with this workaround, please contact our <a href="https://support.gfi.com">support team</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 28, 2025</span>
+                    </div>
+                    <h2>GFI KerioConnect 10.0.8p1 Now Available</h2>
+                    <p>GFI KerioConnect 10.0.8p1 is now available, delivering an important fix to ensure reliable backup operations for your email and collaboration data.</p>
+                    <h3>Bug Fixes:</h3>
+                    <ul>
+                        <li><strong>Backup Process:</strong> Resolved issues with KerioConnect backup process to ensure reliable data protection and backup completion</li>
+                    </ul>
+                    <p>This maintenance release focuses on backup reliability, ensuring your critical email and collaboration data is properly protected.</p>
+                    <p>To view the complete release notes, visit our <a href="https://gfi.ai/products-and-solutions/email-security-solutions/kerioconnect/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 27, 2025</span>
+                    </div>
+                    <h2>GFI KerioConnect 10.0.8 Now Available</h2>
+                    <p>GFI KerioConnect 10.0.8 is now available, delivering critical security patches, improved macOS compatibility, and enhanced user experience across webmail and client applications.</p>
+                    
+                    <h3>Security & Stability:</h3>
+                    <ul>
+                        <li><strong>XSS Vulnerability Patch:</strong> Addressed Cross-Site Scripting vulnerability in the web interface for enhanced security protection</li>
+                        <li><strong>Security Logs:</strong> Fixed errors that occurred after clearing security logs for improved system stability</li>
+                        <li><strong>Let's Encrypt Certificates:</strong> Resolved automatic renewal issues preventing missing or duplicate certificates across multiple domains</li>
+                    </ul>
+                    
+                    <h3>Compatibility & User Experience:</h3>
+                    <ul>
+                        <li><strong>macOS Support:</strong> Restored attachment preview functionality for macOS 12 and higher</li>
+                        <li><strong>Firefox Enhancement:</strong> Added missing scroll bars in web admin logs area for improved navigation</li>
+                        <li><strong>Webmail Improvements:</strong> Fixed display of EML attachments from Mailstore and resolved Calendar event description editing issues</li>
+                        <li><strong>Kerio Connect Client:</strong> Fixed clipboard functionality for pasting inline images</li>
+                    </ul>
+                    
+                    <p>This release focuses on security hardening and user experience improvements, ensuring smoother operations across all platforms and browsers.</p>
+                    
+                    <p>To view the complete release notes, visit our <a href="https://gfi.ai/products-and-solutions/email-and-messaging-solutions/kerioconnect/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 23, 2025</span>
+                    </div>
+                    <h2>GFI AppManager 1.57 Now Available</h2>
+                    <p>GFI AppManager 1.57 introduces passwordless authentication with comprehensive passkey support, revolutionizing secure access management across your organization.</p>
+                    <h3>New Features:</h3>
+                    <ul>
+                        <li><strong>Passkey Registration:</strong> Support for modern passwordless authentication through passkey registration</li>
+                        <li><strong>Passkey Authentication:</strong> Full support for passkey-based login, providing enhanced security and user convenience</li>
+                        <li><strong>Multi-Passkey Management:</strong> Users can now register and manage multiple passkeys for flexible access across devices</li>
+                    </ul>
+                    <h3>Security Enhancements:</h3>
+                    <ul>
+                        <li><strong>Password Expiry:</strong> Implemented automatic password expiry and logout policies for enhanced security compliance</li>
+                    </ul>
+                    <p>This release marks a significant step forward in authentication technology, offering both improved security and user experience through passwordless authentication options.</p>
+                    <p>To view the complete release notes, visit <a href="https://appmanager.gfi.com">appmanager.gfi.com</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 28, 2025</span>
+                    </div>
+                    <h2>GFI AppManager 1.56 Released</h2>
+                    <p>GFI AppManager 1.56 delivers the new Kerio Control Shield Matrix UI along with critical fixes and performance improvements for a smoother management experience.</p>
+                    <h3>New Features:</h3>
+                    <ul>
+                        <li><strong>Kerio Control Shield Matrix UI:</strong> New visualization interface for better management and monitoring of Kerio Control deployments</li>
+                    </ul>
+                    <h3>Bug Fixes:</h3>
+                    <ul>
+                        <li><strong>Auto-Logoff Notifications:</strong> Fixed inconsistencies in auto-logoff notification behavior and resolved blank screen issue after re-login</li>
+                        <li><strong>Account Creation:</strong> Fixed new accounts not appearing immediately after creation; no manual refresh required</li>
+                    </ul>
+                    <h3>Performance Improvements:</h3>
+                    <ul>
+                        <li><strong>Frontend Optimization:</strong> Optimized appliance information loading on frontend for improved performance</li>
+                    </ul>
+                    <p>This release focuses on enhancing the user interface experience and resolving key usability issues reported by administrators.</p>
+                    <p>To view the complete release notes, visit <a href="https://appmanager.gfi.com">appmanager.gfi.com</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Known Bugs">
+                    <div class="article-header">
+                        <span class="article-tag">Known Bugs</span>
+                        <span class="article-date">July 23, 2025</span>
+                    </div>
+                    <h2>AppManager Agent High CPU Utilization Issue</h2>
+                    <p>We have identified a bug in the GFI AppManager Agent that can cause high CPU utilization on KerioControl systems during frequent internet connection drops.</p>
+                    
+                    <h3>What's Happening:</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Unstable internet connections with frequent drops</li>
+                        <li><strong>Impact:</strong> AppManager Agent may consume excessive CPU resources</li>
+                        <li><strong>Severity:</strong> In severe cases, can cause KerioControl to become unresponsive or freeze</li>
+                    </ul>
+                    
+                    <h3>Immediate Solution:</h3>
+                    <p>You can resolve this issue immediately by temporarily disabling the AppManager Agent:</p>
+                    <ol>
+                        <li>Log into your KerioControl web interface</li>
+                        <li>Go to Configuration → Remote Services → GFI AppManager AI</li>
+                        <li>Turn off the AppManager Agent</li>
+                        <li>Click Apply to save your changes</li>
+                    </ol>
+                    
+                    <h3>What Continues Working:</h3>
+                    <ul>
+                        <li>All firewall protection and security features</li>
+                        <li>Internet access and network connectivity</li>
+                        <li>VPN connections</li>
+                        <li>Content filtering and traffic rules</li>
+                        <li>Local administration of your KerioControl system</li>
+                    </ul>
+                    
+                    <p><strong>Status:</strong> Our engineering team is developing a permanent fix that will be delivered automatically through the AppManager Agent's self-update feature. No manual intervention will be required once the fix is released.</p>
+                </div>
+
+                <div class="news-article" data-tag="Known Bugs">
+                    <div class="article-header">
+                        <span class="article-tag">Known Bugs</span>
+                        <span class="article-date">July 14, 2025</span>
+                    </div>
+                    <h2>Known Bugs Report</h2>
+                    <p>Our development team is actively working to resolve the following known issues. Stay tuned for updates!</p>
+                    <h4>GFI KerioConnect</h4>
+                    <ul>
+                        <li>KerioConnect desktop client may fail on the latest edition of Windows 11 due to missing WMCI module</li>
+                        <li>CloudAdmin account error when used outside of GFI AppManager</li>
+                        <li>KerioConnect Client: Copy/Paste functionality for images (Copy Paste von Bildern)</li>
+                    </ul>
+                    <p class="note"><em>Note: We'll keep you posted as these issues are resolved. Resolved issues will be announced in this newsfeed and in their respective product release notes.</em></p>
+                </div>
+
+                <div class="news-article" data-tag="Product Info">
+                    <div class="article-header">
+                        <span class="article-tag">Product Info</span>
+                        <span class="article-date">June 30, 2025</span>
+                    </div>
+                    <h2>GFI KerioConnect Email Setup in Outlook for macOS</h2>
+                    <p>This guide walks you through setting up a GFI KerioConnect account in the macOS version of Outlook using Exchange Web Services (EWS). If two-factor authentication (2FA) is enabled for the account, you'll need to generate an App Password before starting the configuration. Otherwise, you can use the regular account password.</p>
+                    
+                    <h4>Prerequisites</h4>
+                    <p><strong>If 2FA is enabled for the domain, create an App Password:</strong></p>
+                    <ol>
+                        <li>Open your browser and go to the Webmail login page (e.g., https://mail.mailserver.com/webmail/login/).</li>
+                        <li>Log in using the account credentials (e.g., sample@mailserver.com).</li>
+                        <li>Click the gear icon in the upper-right corner to open <strong>Settings</strong>.</li>
+                        <li>Navigate to <strong>Security > App Passwords</strong>.
+                            <br><img src="https://i.ibb.co/1fxtwBp7/image1.png" alt="Security App Passwords">
+                        </li>
+                        <li>Click <strong>+ App Password</strong>, then enter a name to identify it (e.g., OutlookPass).
+                            <br><img src="https://i.ibb.co/yFTrsyjN/image2.png" alt="Add App Password">
+                        </li>
+                        <li>Copy the generated password. You'll use this in place of your regular password when setting up the account in Outlook.</li>
+                    </ol>
+                    
+                    <h4>Add the Account in macOS Outlook</h4>
+                    <ol>
+                        <li>Open <strong>Outlook</strong>.</li>
+                        <li>In the top menu bar, go to <strong>Outlook > New Outlook</strong> and make sure <strong>Legacy Outlook</strong> is selected (a checkmark indicates it's active).</li>
+                        <li>With Legacy Outlook enabled, proceed to add a new account.</li>
+                        <li>Use the following configuration:
+                            <ul>
+                                <li><strong>Email</strong>: your email address (e.g., sample@mailserver.com)</li>
+                                <li><strong>Password</strong>: App Password you just created (or regular password)</li>
+                                <li><strong>Server</strong>: Your mail server address (e.g., https://mail.mailserver.com/ews/exchange.asmx)</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <p>Once entered, Outlook should connect successfully and sync the account.</p>
+                </div>
+
+                <div class="news-article" data-tag="Blog Post">
+                    <div class="article-header">
+                        <span class="article-tag">Blog Post</span>
+                        <span class="article-date">June 20, 2025</span>
+                    </div>
+                    <h2>Unlock Hidden Revenue: Sell Eloquens AI to Your GFI KerioConnect Customers</h2>
+                    <p>As a GFI AppManager administrator, user, or MSP partner, you're sitting on a goldmine of sales opportunities. Your GFI KerioConnect customers are spending hours each day managing email—time that could be transformed into revenue with Eloquens AI.</p>
+                    
+                    <p><strong>The Email Management Reality:</strong> Recent surveys show that 42% of professionals handle 100-200 emails daily, with 27% spending over 3 hours per day on email management. That's 4-13 hours weekly just responding to emails.</p>
+                    
+                    <h4>Why Eloquens AI is Perfect for GFI KerioConnect Users:</h4>
+                    <ul>
+                        <li><strong>Seamless Integration</strong> - Full compatibility with existing GFI KerioConnect infrastructure</li>
+                        <li><strong>AI-Powered Responses</strong> - Generates intelligent, context-aware replies matching communication style</li>
+                        <li><strong>70% Time Savings</strong> - Reduces email response time dramatically</li>
+                        <li><strong>Human-in-the-Loop Controls</strong> - Choose between AI drafts or full automation</li>
+                        <li><strong>Multilingual Support</strong> - Over 160 languages, perfect for global businesses</li>
+                        <li><strong>Knowledge-Based Responses</strong> - Integrates with websites, Google Drive, and OneDrive</li>
+                    </ul>
+                    
+                    <h4>Your GFI AppManager Advantage:</h4>
+                    <p>You already have access to the data that identifies high-value prospects. Use GFI AppManager metrics to target customers with:</p>
+                    <ul>
+                        <li>30+ daily emails (100+ weekly)</li>
+                        <li>High message volumes visible in dashboard analytics</li>
+                        <li>Service accounts (support@, info@, sales@) handling high volumes</li>
+                        <li>Multiple domains indicating larger organizations</li>
+                    </ul>
+                    
+                    <p><strong>ROI Calculator Example:</strong> A customer processing 1,000 emails weekly with $30/hour staff costs could save 46.7 hours weekly, resulting in $5,600 monthly savings and $67,200 annual ROI after Eloquens AI subscription costs.</p>
+                    
+                    <h4>Enterprise-Grade Security & Privacy:</h4>
+                    <ul>
+                        <li><strong>End-to-End Encryption</strong> - TLS 1.2+ for all data transmission</li>
+                        <li><strong>AES-256 Encryption</strong> - Industry standard for data at rest</li>
+                        <li><strong>OAuth 2.0 Authentication</strong> - Secure token-based access</li>
+                        <li><strong>GDPR Compliant</strong> - Full European data protection compliance</li>
+                        <li><strong>No Data Mining</strong> - Your data stays private, never used to train models</li>
+                    </ul>
+                    
+                    <p><strong>Implementation Simplicity:</strong> Most GFI KerioConnect integrations can be completed in minutes, with immediate benefits visible within hours of deployment.</p>
+                    
+                    <p>Transform your existing GFI KerioConnect relationships into new revenue streams. Your customers get powerful email automation, and you get a compelling upsell opportunity backed by concrete data and measurable ROI.</p>
+                    
+                    <p><strong><a href="https://drive.google.com/file/d/1zUiop6H4yhplMZmFB-mmK9yg6PNoyK8l/view?usp=sharing" target="_blank">Learn more about Eloquens AI integration →</a></strong></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterArticles(tag) {
+            const articles = document.querySelectorAll('.news-article');
+            articles.forEach(article => {
+                const articleTag = article.getAttribute('data-tag');
+                if (articleTag === tag) {
+                    article.style.display = 'block';
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+        }
+
+        function clearFilters() {
+            const articles = document.querySelectorAll('.news-article');
+            articles.forEach(article => {
+                article.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>

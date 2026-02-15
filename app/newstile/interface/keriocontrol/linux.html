@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFI Dashboard - KerioControl & AppManager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            color: #121457;
+            overflow-x: hidden;
+            font-size: 11.2px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            max-width: 1075px;
+            margin: 0 auto;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            padding: 14px;
+        }
+
+        .news-feed {
+            background-color: white;
+            border-radius: 7px;
+            padding: 14px;
+            box-shadow: 0 2.8px 5.6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .news-feed .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .news-feed h2 {
+            font-size: 1.05rem;
+            color: #121457;
+            margin: 0;
+        }
+
+        .clear-filters {
+            background-color: transparent;
+            border: 1px solid #121457;
+            color: #121457;
+            padding: 5.6px 8.4px;
+            border-radius: 3.5px;
+            cursor: pointer;
+            font-size: 0.6125rem;
+        }
+
+        .clear-filters:hover {
+            background-color: #1f2280;
+            color: white;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 7px;
+            flex-wrap: nowrap;
+            margin-bottom: 14px;
+        }
+
+        .filter-buttons button {
+            padding: 5.6px 7px;
+            background-color: #E5F1FF;
+            color: #3E4757;
+            border: 1px solid #121457;
+            border-radius: 3.5px;
+            cursor: pointer;
+            font-size: 0.6125rem;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .filter-buttons button:hover {
+            background-color: #1f2280;
+            color: white;
+        }
+
+        .cta-button {
+            padding: 7px 14px;
+            background-color: #121457;
+            color: white;
+            border: none;
+            border-radius: 3.5px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background-color: #1f2280;
+            transform: translateY(-1.4px);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+        }
+
+        .news-article {
+            border-top: 2.8px solid #121457;
+            background-color: white;
+            padding: 10.5px;
+            margin-bottom: 14px;
+            box-shadow: 0 1.4px 3.5px rgba(0, 0, 0, 0.1);
+            border-radius: 3.5px;
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .article-tag {
+            background-color: #e5f1ff;
+            color: #121457;
+            padding: 2.8px 5.6px;
+            border-radius: 2.8px;
+            font-size: 0.6125rem;
+            font-weight: 600;
+        }
+
+        .article-date {
+            font-size: 0.6125rem;
+            color: #545f73;
+        }
+
+        .news-article h2 {
+            font-size: 0.875rem;
+            color: #121457;
+            margin: 7px 0;
+        }
+
+        .news-article h3 {
+            font-size: 0.77rem;
+            color: #121457;
+            margin: 10.5px 0 7px 0;
+        }
+
+        .news-article h4 {
+            font-size: 0.7rem;
+            color: #121457;
+            margin: 8.4px 0 5.6px 0;
+        }
+
+        .news-article h5 {
+            font-size: 0.63rem;
+            color: #121457;
+            margin: 7px 0 4.2px 0;
+        }
+
+        .news-article p {
+            max-height: none;
+            overflow: visible;
+            line-height: 1.4;
+            margin-bottom: 10.5px;
+        }
+
+        .news-article ul {
+            margin: 7px 0;
+            padding-left: 14px;
+        }
+
+        .news-article li {
+            margin-bottom: 3.5px;
+            line-height: 1.3;
+        }
+
+        .product-section {
+            margin-bottom: 14px;
+        }
+
+        .product-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .note {
+            font-style: italic;
+            color: #666;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="main-content">
+            <div class="news-feed">
+                <div class="header-row">
+                    <h2>News feed</h2>
+                    <button class="clear-filters" onclick="clearFilters()">Clear filters</button>
+                </div>
+
+                <div class="filter-buttons">
+                    <button onclick="filterArticles('Product Update')">Product Updates</button>
+                    <button onclick="filterArticles('Product Info')">Product Info</button>
+                    <button onclick="filterArticles('Known Bugs')">Known Bugs</button>
+                </div>
+                <div class="news-article" data-tag="Product Update">
+                    <div class="article-header">
+                    <span class="article-tag">Product Update</span>
+                     <span class="article-date">January 2, 2026</span>
+                     </div>                
+                    <h2>GFI KerioControl AI 9.6:9161 Now Available for Early Access</h2>
+                     <p>GFI KerioControl AI 9.6:9161 is now available for Early Access, introducing Shield Matrix whitelist capabilities and expanded hypervisor support.</p>
+                      <h3>What's New:</h3>
+                      <ul>
+                          <li><strong>Shield Matrix Whitelist:</strong> Define custom whitelists for Shield Matrix, addressing scenarios where legitimate traffic (such as Let's Encrypt certificate renewals) was incorrectly blocked.</li>
+                          <li><strong>Native QEMU/Proxmox Support:</strong> Improved compatibility for deployments running in QEMU-based hypervisors including Proxmox.</li>
+                          <li><strong>GFI AppManager AI Per-Service Connection Limits:</strong> Administrators can now define maximum concurrent connections per individual service via AppManager > Configuration > Security Settings > Connection Limits.</li>
+                          <li><strong>IPsec Enhancements:</strong> Added support for ECC Diffie-Hellman Groups 19/20/21 (ECP256/ECP384/ECP521).</li>
+                          <li><strong>GeoIP Updates:</strong> Updated GeoIP database support for improved accuracy and performance.</li>
+                          <li><strong>Bug Fixes:</strong> Resolved issues with DHCP lease renewals, HA failover configuration on slave nodes with multiple WAN links, and intermittent high CPU spikes causing traffic disruption.</li>
+                      </ul>
+                      <p>You can download this version <a href="https://drive.google.com/drive/u/1/folders/1DBSbnfElBYYFBkFPk2WDBkeypckGE-P8">here</a>.</p>
+                    </div>
+                <div class="news-article" data-tag="Known Bugs" data-date="2025-10-24">
+                    <div class="article-header">
+                        <span class="article-tag">Known Bugs</span>
+                        <span class="article-date">October 24, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl - UDP Traffic Stability Issue</h2>
+                    <p>We are aware of an issue affecting UDP traffic stability in some KerioControl environments.</p>
+                    
+                    <h3>What We've Identified:</h3>
+                    <p>This issue does not affect all GFI KerioControl customers. We have identified a bug that may cause occasional drops of UDP packets in certain KerioControl environments.</p>
+                    
+                    <h3>Current Status:</h3>
+                    <p>Our KerioControl development team has made this a highest priority issue and is working around the clock to resolve it.</p>
+                    <p><strong>Latest Update:</strong> A fix has been identified, and we are currently in the testing phase to ensure the solution completely resolves the issue without introducing any unintended side effects.</p>
+                    
+                    <h3>Resolution:</h3>
+                    <p><strong>✅ This issue has been resolved in GFI KerioControl 9.6, which is now available in beta.</strong></p>
+                    <p>Users experiencing UDP traffic stability issues can access the beta version here: <a href="https://drive.google.com/drive/folders/1IuzkYhpjqVCliHmg1HwS6IocDBpD0LmT?usp=sharing" target="_blank">Download KerioControl 9.6 Beta</a></p>
+                    <p><strong>Public Release ETA:</strong> First week of November 2025</p>
+                    
+                    <h3>Monitoring the Issue:</h3>
+                    <p>You can track real-time status updates at: <a href="https://status.gfi.com/">https://status.gfi.com/</a></p>
+                    <p>The public release will be made available through the standard KerioControl update mechanism.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Info" data-date="2025-10-09">
+                    <div class="article-header">
+                        <span class="article-tag">Product Info</span>
+                        <span class="article-date">October 9, 2025</span>
+                    </div>                
+                    <h2>Let's Encrypt Certificate Renewal and Shield Matrix Interaction</h2>
+                    <p>Users may experience SSL certificate renewal delays in KerioConnect when KerioControl's Shield Matrix blocks Let's Encrypt endpoints that have been flagged by global threat intelligence.</p>
+                    <h3>Workaround:</h3>
+                    <ul>
+                        <li><strong>Temporary Solution:</strong> Disable Shield Matrix in KerioControl during KerioConnect certificate renewal, then re-enable once renewal completes</li>
+                        <li><strong>Affected Configurations:</strong> KerioConnect with KerioControl running Shield Matrix enabled</li>
+                    </ul>
+                    <p>We're monitoring this behavior to determine whether this represents a change in Let's Encrypt's standard operations. Updates will be provided as the situation develops.</p>
+                    <p>If you need assistance with this workaround, please contact our <a href="https://support.gfi.com">support team</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-08-28">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 28, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl 9.5p3 Now Available</h2>
+                    <p>GFI KerioControl 9.5p3 is now available, delivering critical stability improvements and enhanced VPN monitoring capabilities for improved network security management.</p>
+                    <h3>Stability Improvements:</h3>
+                    <ul>
+                        <li><strong>IPS Stability:</strong> Resolved critical system stability issues when modifying configurations with IPS enabled</li>
+                    </ul>
+                    <h3>Bug Fixes:</h3>
+                    <ul>
+                        <li><strong>System Stability:</strong> Fixed a bug where IPS could cause system hangs during configuration changes</li>
+                        <li><strong>VPN Statistics:</strong> Corrected OpenVPN client statistics display on the dashboard VPN information tile</li>
+                        <li><strong>Activity Logging:</strong> Fixed OpenVPN client activity tracking to properly include entries in the dial log</li>
+                    </ul>
+                    <h3>Improvements:</h3>
+                    <ul>
+                        <li><strong>VPN Monitoring:</strong> Enhanced visibility of OpenVPN client connections with accurate dashboard statistics and comprehensive activity logging</li>
+                    </ul>
+                    <p>This maintenance release focuses on system stability and VPN monitoring accuracy, ensuring reliable operation of critical security features.</p>
+                    <p>To view the complete release notes, visit our <a href="https://gfi.ai/products-and-solutions/network-security-solutions/keriocontrol/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-08-28b">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 28, 2025</span>
+                    </div>
+                    <h2>GFI AppManager 1.56 Released</h2>
+                    <p>GFI AppManager 1.56 delivers the new Kerio Control Shield Matrix UI along with critical fixes and performance improvements for a smoother management experience.</p>
+                    <h3>New Features:</h3>
+                    <ul>
+                        <li><strong>Kerio Control Shield Matrix UI:</strong> New visualization interface for better management and monitoring of Kerio Control deployments</li>
+                    </ul>
+                    <h3>Bug Fixes:</h3>
+                    <ul>
+                        <li><strong>Auto-Logoff Notifications:</strong> Fixed inconsistencies in auto-logoff notification behavior and resolved blank screen issue after re-login</li>
+                        <li><strong>Account Creation:</strong> Fixed new accounts not appearing immediately after creation; no manual refresh required</li>
+                    </ul>
+                    <h3>Performance Improvements:</h3>
+                    <ul>
+                        <li><strong>Frontend Optimization:</strong> Optimized appliance information loading on frontend for improved performance</li>
+                    </ul>
+                    <p>This release focuses on enhancing the user interface experience and resolving key usability issues reported by administrators.</p>
+                    <p>To view the complete release notes, visit <a href="https://appmanager.gfi.com">appmanager.gfi.com</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-08-23">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 23, 2025</span>
+                    </div>
+                    <h2>GFI AppManager 1.57 Now Available</h2>
+                    <p>GFI AppManager 1.57 introduces passwordless authentication with comprehensive passkey support, revolutionizing secure access management across your organization.</p>
+                    <h3>New Features:</h3>
+                    <ul>
+                        <li><strong>Passkey Registration:</strong> Support for modern passwordless authentication through passkey registration</li>
+                        <li><strong>Passkey Authentication:</strong> Full support for passkey-based login, providing enhanced security and user convenience</li>
+                        <li><strong>Multi-Passkey Management:</strong> Users can now register and manage multiple passkeys for flexible access across devices</li>
+                    </ul>
+                    <h3>Security Enhancements:</h3>
+                    <ul>
+                        <li><strong>Password Expiry:</strong> Implemented automatic password expiry and logout policies for enhanced security compliance</li>
+                    </ul>
+                    <p>This release marks a significant step forward in authentication technology, offering both improved security and user experience through passwordless authentication options.</p>
+                    <p>To view the complete release notes, visit <a href="https://appmanager.gfi.com">appmanager.gfi.com</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-08-13">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">August 13, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl 9.5p2 Now Available</h2>
+                    <p>GFI KerioControl 9.5p2 is now available, delivering critical stability improvements and bug fixes for enhanced network security and performance.</p>
+                    
+                    <h3>Bug Fixes:</h3>
+                    <ul>
+                        <li><strong>System Stability:</strong> Fixed rare system hang that occurred when internet connectivity is unstable and many DNS requests are flooding in from the LAN</li>
+                        <li><strong>IPS Hardening:</strong> Added hotfix to prevent system crashes when IPS threat definition rules are broken</li>
+                        <li><strong>GFI Agent Optimization:</strong> GFI agent is now sandboxed to stop excessive CPU usage on some systems</li>
+                        <li><strong>DHCP Enhancement:</strong> DHCP lease renewal now requests the previous IP before discovering a new one</li>
+                        <li><strong>2FA Authentication:</strong> Fixed a bug where 2FA was incorrectly enforced on LAN connections</li>
+                        <li><strong>OpenVPN Fix:</strong> Fixed a bug where OpenVPN authentication errors occurred when Reverse Proxy is disabled</li>
+                    </ul>
+                    
+                    <p>This patch release focuses on improving system reliability and addressing key authentication and connectivity issues reported by users.</p>
+                    
+                    <p>To view the complete release notes, visit our <a href="https://gfi.ai/products-and-solutions/network-security-solutions/keriocontrol/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Known Bugs" data-date="2025-07-23">
+                    <div class="article-header">
+                        <span class="article-tag">Known Bugs</span>
+                        <span class="article-date">July 23, 2025</span>
+                    </div>
+                    <h2>AppManager Agent High CPU Utilization Issue</h2>
+                    <p>We have identified a bug in the GFI AppManager Agent that can cause high CPU utilization on KerioControl systems during frequent internet connection drops.</p>
+                    
+                    <h3>What's Happening:</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Unstable internet connections with frequent drops</li>
+                        <li><strong>Impact:</strong> AppManager Agent may consume excessive CPU resources</li>
+                        <li><strong>Severity:</strong> In severe cases, can cause KerioControl to become unresponsive or freeze</li>
+                    </ul>
+                    
+                    <h3>Immediate Solution:</h3>
+                    <p>You can resolve this issue immediately by temporarily disabling the AppManager Agent:</p>
+                    <ol>
+                        <li>Log into your KerioControl web interface</li>
+                        <li>Go to Configuration → Remote Services → GFI AppManager AI</li>
+                        <li>Turn off the AppManager Agent</li>
+                        <li>Click Apply to save your changes</li>
+                    </ol>
+                    
+                    <h3>What Continues Working:</h3>
+                    <ul>
+                        <li>All firewall protection and security features</li>
+                        <li>Internet access and network connectivity</li>
+                        <li>VPN connections</li>
+                        <li>Content filtering and traffic rules</li>
+                        <li>Local administration of your KerioControl system</li>
+                    </ul>
+                    
+                    <p><strong>Status:</strong> Our engineering team is developing a permanent fix that will be delivered automatically through the AppManager Agent's self-update feature. No manual intervention will be required once the fix is released.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Info" data-date="2025-07-18">
+                    <div class="article-header">
+                        <span class="article-tag">Product Info</span>
+                        <span class="article-date">July 18, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl AI Version Update Reference Guide to v10</h2>
+                    <p>This guide maps out GFI KerioControl AI version update pathway to ensure successful update to GFI KerioControl AI v10 regardless of your starting version.</p>
+                    
+                    <h4>How to Use This Guide</h4>
+                    <ol>
+                        <li><strong>Find your current version</strong> in the update paths below</li>
+                        <li><strong>Follow the arrows</strong> from your version to v10</li>
+                        <li><strong>Complete each step</strong> in order - do not skip versions</li>
+                    </ol>
+                    
+                    <h4>Update Paths by Starting Version</h4>
+                    
+                    <p><strong>If you're running 9.3.6p1 or earlier:</strong></p>
+                    <p>9.3.6p1 → 9.4.2p2 → 9.4.3p4 → 9.4.5p2 → 9.5p1 → v10</p>
+                    <p><em>Versions: 9.3.6p1 → 9.4.2p2 → 9.4.3p4 → 9.4.5p2 → 9.5p1 → v10</em><br>
+                    <em>Kernel: #8 #10 #10 #10 #10 #12</em></p>
+                    <p>⚠️ <strong>Critical</strong>: The 9.4.3p4 step is mandatory - it resizes partitions needed for later updates</p>
+                    
+                    <p><strong>If you're running 9.4.2p2:</strong></p>
+                    <p>9.4.2p2 → 9.4.3p4 → 9.4.5p2 → 9.5p1 → v10</p>
+                    <p><em>Kernel: #10 #10 #10 #10 #12</em></p>
+                    
+                    <p><strong>If you're running 9.4.3p4:</strong></p>
+                    <p>9.4.3p4 → 9.4.5p2 → 9.5p1 → v10</p>
+                    <p><em>Kernel: #10 #10 #10 #12</em></p>
+                    
+                    <p><strong>If you're running 9.4.5 (any patch level):</strong></p>
+                    <p>9.4.5/9.4.5p1/9.4.5p2 → 9.5p1 → v10</p>
+                    <p><em>Kernel: #10 #10 #12</em></p>
+                    
+                    <p><strong>If you're running 9.5 or 9.5p1:</strong></p>
+                    <p>9.5/9.5p1 → v10</p>
+                    
+                    <h4>Why These Specific Versions?</h4>
+                    <ul>
+                        <li><strong>9.4.3p4</strong>: Performs critical partition resizing required for all future updates</li>
+                        <li><strong>9.4.5p2</strong>: Most stable intermediate version</li>
+                        <li><strong>9.5p1</strong>: Fixes stability issues and prepares for v10 kernel update</li>
+                        <li><strong>v10</strong>: Modern Debian Bookworm kernel with improved performance and security</li>
+                    </ul>
+                    
+                    <h4>Before You Start</h4>
+                    <p>✓ Create a complete configuration backup<br>
+                    ✓ Document your network settings<br>
+                    ✓ Plan maintenance window for multiple updates<br>
+                    ✓ Verify hardware compatibility with v10</p>
+                    
+                    <ul>
+                        <li><strong>Cannot skip versions</strong> - each step prepares the system for the next</li>
+                        <li><strong>Versions before 8.0</strong> require fresh installation</li>
+                    </ul>
+                    
+                    <p>This guide ensures successful updates to GFI KerioControl AI v10 regardless of your starting version.</p>
+                </div>
+
+                <div class="news-article" data-tag="Known Bugs" data-date="2025-07-14">
+                    <div class="article-header">
+                        <span class="article-tag">Known Bugs</span>
+                        <span class="article-date">July 14, 2025</span>
+                    </div>
+                    <h2>Known Bugs Report</h2>
+                    <p>Our development team is actively working to resolve the following known issues. Stay tuned for updates!</p>
+                    <h4>GFI KerioControl AI</h4>
+                    <ul>
+                        <li>KerioControl 9.5 and 9.5p1 - autologin users are prevented from browsing</li>
+                        <li>Connection issue with 3rd party (SMTP host) mail server with specific MTU configuration</li>
+                        <li>Some websites are loading slowly</li>
+                        <li>Transparent redirection needed for Websafety proxy</li>
+                    </ul>
+                    <p class="note"><em>Note: We'll keep you posted as these issues are resolved. Resolved issues will be announced in this newsfeed and in their respective product release notes.</em></p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-07-09">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">July 9, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl 9.5p1 is now available</h2>
+                    <p>We're pleased to announce the release of KerioControl 9.5p1, a critical maintenance update focused on stability and security improvements:</p>
+                    <ul>
+                        <li>Fixed security vulnerability in the ringfencing agent to enhance system protection</li>
+                        <li>Resolved performance issues and network instability caused by GFI Agent (AppManager) integration</li>
+                        <li>Fixed OpenVPN connection failures affecting KerioControl 9.5</li>
+                        <li>Resolved OpenVPN connectivity problems that occurred after certificate changes</li>
+                        <li>Fixed IPS engine instability bug that was causing crashes in KerioControl 9.5</li>
+                    </ul>
+                    <p>This update is strongly recommended for all users running GFI KerioControl 9.5 to ensure optimal system stability and security. For complete release notes, please visit our <a href="https://gfi.ai/products-and-solutions/network-security-solutions/keriocontrol/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-06-13">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">June 13, 2025</span>
+                    </div>
+                    <h2>Introducing the New GFI KerioControl Hardware Lineup</h2>
+                    <p>We're excited to unveil our next-generation GFI KerioControl appliances, featuring enhanced 2.5 Gbps connectivity and significantly improved performance across the entire range. These new models will be available from June through September 2025.</p>
+                    
+                    <h3>NG 120 Desktop Appliance</h3>
+                    <p>The entry-level NG 120 features 4x 2.5 Gbps RJ45 ports and supports up to 100 devices with 1.1 Gbps firewall performance. Perfect for small to medium businesses requiring reliable network security with modern connectivity standards.</p>
+                    <p><strong>Available:</strong> August 2025</p>
+                    
+                    <h3>NG 320 and NG 520 Rackmount Appliances</h3>
+                    <p>The NG 320 mid-range 1U appliance offers 8x 2.5 Gbps ports for up to 320 devices, while the high-performance NG 520 handles up to 1500 devices with impressive 2.3 Gbps firewall throughput. Both models deliver enterprise-grade reliability in a compact rackmount form factor.</p>
+                    <p><strong>NG 320 Available:</strong> September 2025 | <strong>NG 520 Available:</strong> June 2025</p>
+                    
+                    <h3>NG 521 Maximum Connectivity</h3>
+                    <p>For environments requiring maximum port density, the NG 521 combines 8x 2.5 Gbps and 8x 1 Gbps RJ45 ports in a single 1U appliance. Supporting up to 1500 devices with 2.3 Gbps performance, it provides ultimate connectivity flexibility for complex network topologies.</p>
+                    <p><strong>Available:</strong> June 2025</p>
+                    
+                    <h3>NG 700 Enterprise Appliance</h3>
+                    <p>The flagship NG 700 enterprise 1U appliance features 8x 2.5 Gbps RJ45 ports, 4x 1 Gbps SFP ports, and 4x 10 Gbps ports. Built for high-demand environments with optional dual PSU support for maximum uptime in mission-critical deployments.</p>
+                    <p><strong>Available:</strong> September 2025</p>
+                    
+                    <h3>Enhanced Performance and Seamless Migration</h3>
+                    <p>All new models run on the enhanced GFI KerioControl v10 kernel, delivering up to 50% better IPS performance compared to previous generations. The appliances maintain full compatibility with existing KCL 100/300/500 licenses, ensuring seamless migration without additional licensing costs.</p>
+                    <p>GFI will test KerioControl releases on current NG hardware (110/310/510/511) until June 2027. After this date, software updates continue but compatibility evaluation becomes the user's responsibility. With a valid license, GFI KerioControl on this hardware will continue to operate, and all security updates (IPS, antivirus, etc.) will still be provided.</p>
+                    <p>For detailed specifications, pricing, and availability in your region, contact our authorized distributors at <a href="https://gfi.ai">gfi.ai</a>.</p>
+                </div>
+
+                <div class="news-article" data-tag="Product Update" data-date="2025-06-06">
+                    <div class="article-header">
+                        <span class="article-tag">Product Update</span>
+                        <span class="article-date">June 6, 2025</span>
+                    </div>
+                    <h2>GFI KerioControl 9.5 is now available</h2>
+                    <p>We're excited to announce the release of GFI KerioControl 9.5 (Build 8755), a feature release that delivers performance enhancements and introduces two powerful new capabilities:</p>
+                    
+                    <h3>New Shield Matrix Threat Protection</h3>
+                    <p>Shield Matrix is an AI-powered threat intelligence system that provides zero-hour protection against emerging threats. Using a global network of honeypots and traps, it analyzes attack attempts in real-time with updates every 60 minutes and assigns confidence levels to block threats instantly. This premium feature is available as part of the KerioControl Security Add-On.</p>
+                    <p><a href="https://gfi.ai/application/files/1017/4801/0471/Understanding_Shield_Matrix_.pdf">Shield Matrix Understanding Guide</a> | <a href="https://gfi.ai/application/files/7217/4852/8987/How_to_Configure_and_Manage_Shield_Matrix.pdf">Configuration Guide</a></p>
+                    
+                    <h3>OpenVPN Support</h3>
+                    <p>KerioControl 9.5 adds OpenVPN as a third VPN protocol alongside Kerio VPN and IPSec. Available through the standard interface section, it offers cross-platform compatibility with simple profile-based setup, making it ideal for mobile workforce and BYOD environments.</p>
+                    <p><a href="https://gfi.ai/application/files/1917/4836/4996/OpenVPN_integration_in_GFI_KerioControl.pdf">OpenVPN Integration Guide</a></p>
+                    
+                    <h3>Enhanced Performance</h3>
+                    <p>The updated Intrusion Prevention System delivers 20-40% better performance with improved stability and resource utilization, plus extensive bug fixes including AppManager connectivity, VPN connections, and RADIUS authentication improvements.</p>
+                    
+                    <p>For complete release notes and implementation guides, please visit our <a href="https://gfi.ai/products-and-solutions/network-security-solutions/keriocontrol/resources/documentation/product-releases">release notes page</a>.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterArticles(tag) {
+            const articles = document.querySelectorAll('.news-article');
+            articles.forEach(article => {
+                const articleTag = article.getAttribute('data-tag');
+                if (articleTag === tag || tag === 'all') {
+                    article.style.display = 'block';
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+        }
+
+        function clearFilters() {
+            const articles = document.querySelectorAll('.news-article');
+            articles.forEach(article => {
+                article.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
