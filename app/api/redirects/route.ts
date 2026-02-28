@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { reloadRedirects } from '@/lib/redirects-cache';
+import { logAudit } from '@/lib/audit';
 
 interface Redirect {
   id: number;
@@ -28,7 +29,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { source_path, destination_url, redirect_type = 301, notes = '' } = body;
+    const { source_path, destination_url, redirect_type = 301, notes = '', user_email = 'unknown' } = body;
 
     if (!source_path || !destination_url) {
       return NextResponse.json(
@@ -37,10 +38,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await query(
-      'INSERT INTO redirects (source_path, destination_url, redirect_type, notes) VALUES ($1, $2, $3, $4)',
+    const result = await query<{ id: number }[]>(
+      'INSERT INTO redirects (source_path, destination_url, redirect_type, notes) VALUES ($1, $2, $3, $4) RETURNING id',
       [source_path, destination_url, redirect_type, notes]
     );
+
+    await logAudit(user_email, 'CREATE', 'redirect', result[0]?.id, `${source_path} -> ${destination_url}`);
 
     // Reload cache immediately
     await reloadRedirects();
@@ -64,7 +67,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, source_path, destination_url, redirect_type, is_active, notes } = body;
+    const { id, source_path, destination_url, redirect_type, is_active, notes, user_email = 'unknown' } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'id is required' }, { status: 400 });
@@ -106,6 +109,8 @@ export async function PUT(request: NextRequest) {
       values
     );
 
+    await logAudit(user_email, 'UPDATE', 'redirect', id, `Updated: ${updates.map(u => u.split(' = ')[0]).join(', ')}`);
+
     // Reload cache immediately
     await reloadRedirects();
 
@@ -121,12 +126,15 @@ export async function DELETE(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
+    const userEmail = searchParams.get('user_email') || 'unknown';
 
     if (!id) {
       return NextResponse.json({ error: 'id parameter required' }, { status: 400 });
     }
 
     await query('DELETE FROM redirects WHERE id = $1', [id]);
+
+    await logAudit(userEmail, 'DELETE', 'redirect', id, `Deleted redirect #${id}`);
 
     // Reload cache immediately
     await reloadRedirects();

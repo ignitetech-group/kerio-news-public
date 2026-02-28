@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { logAudit } from '@/lib/audit';
 
 // GET all pages or single page by slug
 export async function GET(request: NextRequest) {
@@ -35,6 +36,8 @@ export async function PUT(request: NextRequest) {
       'UPDATE pages SET html_content = $1, updated_by = $2 WHERE slug = $3',
       [html_content, updated_by || 'admin', slug]
     );
+
+    await logAudit(updated_by || 'admin', 'UPDATE', 'page', slug, `Updated page content for ${slug}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

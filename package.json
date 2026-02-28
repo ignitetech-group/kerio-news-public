@@ -9,8 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tinymce/tinymce-react": "^6.3.0",
     "dotenv": "^17.2.4",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
     "pg": "^8.18.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"

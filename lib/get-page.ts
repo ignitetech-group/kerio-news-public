@@ -1,11 +1,18 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { query } from './db';
+import { buildFeedPage } from './build-feed';
 
 /**
- * Get page HTML content - tries DB first, falls back to static file
+ * Get page HTML content.
+ * Priority: news_items table (dynamic) -> pages table (blob) -> static file
  */
 export async function getPageContent(slug: string, fallbackFile: string): Promise<string> {
+  // Try dynamic news items first
+  const dynamic = await buildFeedPage(slug);
+  if (dynamic) return dynamic;
+
+  // Fall back to pages table
   try {
     const pages = await query<{ html_content: string }[]>(
       'SELECT html_content FROM pages WHERE slug = $1',

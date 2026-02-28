@@ -40,3 +40,36 @@ CREATE TABLE IF NOT EXISTS pages (
 
 CREATE TRIGGER update_pages_updated_at BEFORE UPDATE ON pages
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Audit Log Table for tracking admin actions
+CREATE TABLE IF NOT EXISTS audit_log (
+  id SERIAL PRIMARY KEY,
+  user_email VARCHAR(200) NOT NULL,
+  action VARCHAR(20) NOT NULL,
+  entity_type VARCHAR(50) NOT NULL,
+  entity_id VARCHAR(50),
+  details TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_email);
+
+-- News Items Table for individual news feed articles
+CREATE TABLE IF NOT EXISTS news_items (
+  id SERIAL PRIMARY KEY,
+  feed_slug VARCHAR(100) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  title VARCHAR(500) NOT NULL,
+  content TEXT NOT NULL DEFAULT '',
+  article_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  sort_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_items_feed ON news_items(feed_slug, is_active, sort_order);
+
+CREATE TRIGGER update_news_items_updated_at BEFORE UPDATE ON news_items
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

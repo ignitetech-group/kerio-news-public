@@ -9,7 +9,25 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Skip middleware for Next.js internals, API routes, and static files
+  // Skip for auth routes
+  if (path.startsWith('/api/auth') || path.startsWith('/auth')) {
+    return NextResponse.next();
+  }
+
+  // Protect /admin — check for session cookie, redirect to sign-in if missing.
+  // Full session validation happens in the server component (app/admin/page.tsx).
+  if (path.startsWith('/admin')) {
+    const sessionCookie = request.cookies.get('authjs.session-token')
+      || request.cookies.get('__Secure-authjs.session-token');
+    if (!sessionCookie) {
+      const signInUrl = new URL('/auth/signin', request.nextUrl.origin);
+      signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+    return NextResponse.next();
+  }
+
+  // Skip redirect check for Next.js internals, API routes, and static files
   if (
     path.startsWith('/_next') ||
     path.startsWith('/api') ||
@@ -18,6 +36,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Redirect proxy logic
   try {
     const now = Date.now();
 
